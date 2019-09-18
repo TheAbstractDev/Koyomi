@@ -3,7 +3,7 @@
 <p align="center"><strong>Koyomi</strong> is a simple calendar view framework for iOS, written in Swift :calendar:</p>
 
 <p align="center">
-<img src="./DemoSource/demo-example.gif" width="400">
+<img src="https://github.com/shoheiyokoyama/Assets/blob/master/Koyomi/demo-example.gif" width="400">
 </p>
 
 ## Content
@@ -29,10 +29,10 @@
 [![License](http://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat
 )](http://mit-license.org)
 [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/sindresorhus/awesome)
-[![Language](http://img.shields.io/badge/language-swift 2.3-orange.svg?style=flat
-)](https://developer.apple.com/swift)
-[![Language](http://img.shields.io/badge/language-swift 3.0-orange.svg?style=flat
-)](https://developer.apple.com/swift)
+![Swift](https://img.shields.io/badge/Swift-3.0-orange.svg)
+![pod](https://img.shields.io/badge/pod-v1.2.7-red.svg)
+[![GitHub stars](https://img.shields.io/github/stars/shoheiyokoyama/Koyomi.svg)](https://github.com/shoheiyokoyama/Koyomi/stargazers)
+
 
 - Simple Calendar View :calendar:
 - Easily usable :sunglasses:
@@ -121,17 +121,17 @@ You can configure ***SelectionMode*** with style.
 
 
 
- **single** |<img src="./DemoSource/single-background-mode.gif" width="130"> | <img src="./DemoSource/single-circle-mode.gif" width="130"> | <img src="./DemoSource/single-line-mode.gif" width="130">
+ **single** |<img src="https://github.com/shoheiyokoyama/Assets/blob/master/Koyomi/single-background-mode.gif" width="130"> | <img src="https://github.com/shoheiyokoyama/Assets/blob/master/Koyomi/single-circle-mode.gif" width="130"> | <img src="https://github.com/shoheiyokoyama/Assets/blob/master/Koyomi/single-line-mode.gif" width="130">
 ----  |  ----  |  ----  |  ----  |
  ***SelectionMode*** |  `.single(style: .background)`  |   `.single(style: .circle)` | `.single(style: .line)` |
  
  
-  **multiple** |<img src="./DemoSource/multiple-background-mode.gif" width="130"> | <img src="./DemoSource/multiple-circle-mode.gif" width="130"> | <img src="./DemoSource/multiple-line-mode.gif" width="130">
+  **multiple** |<img src="https://github.com/shoheiyokoyama/Assets/blob/master/Koyomi/multiple-background-mode.gif" width="130"> | <img src="https://github.com/shoheiyokoyama/Assets/blob/master/Koyomi/multiple-circle-mode.gif" width="130"> | <img src="https://github.com/shoheiyokoyama/Assets/blob/master/Koyomi/multiple-line-mode.gif" width="130">
 ----  |  ----  |  ----  | ----  |
  ***SelectionMode*** |  `.multiple(style: .background)`  |   `.multiple(style: .circle)` | `.multiple(style: .line)` |
  
  
-  **sequence** | <img src="./DemoSource/sequence-background-mode.gif" width="100"> | <img src="./DemoSource/sequence-circle-mode.gif" width="100"> | <img src="./DemoSource/sequence-semicircleEdge-mode.gif" width="100">　| <img src="./DemoSource/sequence-line-mode.gif" width="100">
+  **sequence** | <img src="https://github.com/shoheiyokoyama/Assets/blob/master/Koyomi/sequence-background-mode.gif" width="100"> | <img src="https://github.com/shoheiyokoyama/Assets/blob/master/Koyomi/sequence-circle-mode.gif" width="100"> | <img src="https://github.com/shoheiyokoyama/Assets/blob/master/Koyomi/sequence-semicircleEdge-mode.gif" width="100">　| <img src="https://github.com/shoheiyokoyama/Assets/blob/master/Koyomi/sequence-line-mode.gif" width="100">
 ----  |  ----  |  ----  | ----  | ----  |
  ***SelectionMode*** |  `.sequence(style: .background)`  |   `.sequence(style: .circle)` |  `.sequence(style: .semicircleEdge)` | `.sequence(style: .line)` |
  
@@ -318,7 +318,7 @@ Tells the delegate that the displayed month is changed.
 ```
 
 <p align="center">
-<img src="./DemoSource/calendar-layout.png" width="450">
+<img src="https://github.com/shoheiyokoyama/Assets/blob/master/Koyomi/calendar-layout.png" width="450">
 </p>
 
 ```swift
@@ -397,10 +397,10 @@ Don't worry :stuck_out_tongue_closed_eyes:, you can easily configure appearance 
 ```
 
 <p align="center">
-<img src="./DemoSource/color-style.gif" width="300">
+<img src="https://github.com/shoheiyokoyama/Assets/blob/master/Koyomi/color-style.gif" width="300">
 </p>
 
-`KoyomiStyle` is defined by 19 types.
+`KoyomiStyle` is defined by 19 types + 1 custom.
 used [iOS Human Interface Guidelines](https://developer.apple.com/ios/human-interface-guidelines/visual-design/color/) as reference
 
 
@@ -410,7 +410,24 @@ used [iOS Human Interface Guidelines](https://developer.apple.com/ios/human-inte
         case monotone, standard, red, orange, yellow, tealBlue, blue, purple, green, pink
         // deep color style
         case deepBlack, deepRed, deepOrange, deepYellow, deepTealBlue, deepBlue, deepPurple, deepGreen, deepPink
+        
+        case custom(customColor: CustomColorScheme)
     }
+```
+
+To use a custom color scheme, you need to define tuple with the necessarry values
+
+```swift
+    // This is a replica of the `.deepRed` style, you can unleash your creativity here:
+    let customColorScheme = (dayBackgrond: UIColor.KoyomiColor.red,
+                           weekBackgrond: UIColor.KoyomiColor.red,
+                           week: .white,
+                           weekday: .white,
+                           holiday: (saturday: UIColor.white, sunday: UIColor.white),
+                           otherMonth: UIColor.KoyomiColor.lightGray,
+                           separator: UIColor.KoyomiColor.orange)
+            
+    koyomi.style = KoyomiStyle.custom(customColor: customColorScheme)
 ```
 
 ## <a name="requirements"> :pencil: Requirements
@@ -448,7 +465,7 @@ github "shoheiyokoyama/Koyomi"
 
 ## <a name="app_using_koyomi"> App using ***Koyomi*** 
 
-- Take's One
+- [Take's One](http://www.takesone.jp/)
 
 If you're using ***Koyomi*** in your app, please open a PR to add it to this list! :blush:
 

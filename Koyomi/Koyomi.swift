@@ -26,7 +26,7 @@ import UIKit
      - Parameter dateString: The current date string.
      */
     @objc optional func koyomi(_ koyomi: Koyomi, currentDateString dateString: String)
-
+    
     /**
      The koyomi calls this method before select days
      
@@ -38,10 +38,10 @@ import UIKit
      - Returns: true if the item should be selected or false if it should not.
      */
     @objc optional func koyomi(_ koyomi: Koyomi, shouldSelectDates date: Date?, to toDate: Date?, withPeriodLength length: Int) -> Bool
-
+    
     /**
      Returns selection color for individual cells.
-    
+     
      - Parameter koyomi:    The current Koyomi instance.
      - Parameter indexPath: The index path of the cell that was selected.
      - Parameter date:      The date representing current item.
@@ -49,6 +49,17 @@ import UIKit
      - Returns: A color for selection background for item at the `indexPath` or nil for default selection color.
      */
     @objc optional func koyomi(_ koyomi: Koyomi, selectionColorForItemAt indexPath: IndexPath, date: Date) -> UIColor?
+    
+    /**
+     Returns selection text color for individual cells.
+     
+     - Parameter koyomi:    The current Koyomi instance.
+     - Parameter indexPath: The index path of the cell that was selected.
+     - Parameter date:      The date representing current item.
+     
+     - Returns: A text color for the label for item at the `indexPath` or nil for default selection color.
+     */
+    @objc optional func koyomi(_ koyomi: Koyomi, selectionTextColorForItemAt indexPath: IndexPath, date: Date) -> UIColor?
     
     /**
      Returns font for individual cells.
@@ -60,16 +71,27 @@ import UIKit
      - Returns: A font for item at the indexPath or nil for default font.
      */
     @objc optional func koyomi(_ koyomi: Koyomi, fontForItemAt indexPath: IndexPath, date: Date) -> UIFont?
-
+    
 }
 
 // MARK: - KoyomiStyle -
 
 public enum KoyomiStyle {
+    /// Custom tuple to define your own colors instead of using the built-in schemes
+    public typealias CustomColorScheme = (dayBackgrond: UIColor,
+        weekBackgrond: UIColor,
+        week: UIColor,
+        weekday: UIColor,
+        holiday: (saturday: UIColor, sunday: UIColor),
+        otherMonth: UIColor,
+        separator: UIColor)
+    
     // Basic color
     case monotone, standard, red, orange, yellow, tealBlue, blue, purple, green, pink
     // Deep color
     case deepBlack, deepRed, deepOrange, deepYellow, deepTealBlue, deepBlue, deepPurple, deepGreen, deepPink
+    // Custom
+    case custom(customColor: CustomColorScheme)
     
     var colors: Koyomi.Colors {
         switch self {
@@ -96,6 +118,9 @@ public enum KoyomiStyle {
         case .deepPurple:   return .init(dayBackgrond: UIColor.KoyomiColor.purple, weekBackgrond: UIColor.KoyomiColor.purple, week: .white, weekday: .white, holiday: (.white, .white), otherMonth: UIColor.KoyomiColor.lightGray, separator: UIColor.KoyomiColor.lightPurple)
         case .deepGreen:    return .init(dayBackgrond: UIColor.KoyomiColor.green, weekBackgrond: UIColor.KoyomiColor.green, week: .white, weekday: .white, holiday: (.white, .white), otherMonth: UIColor.KoyomiColor.lightGray, separator: UIColor.KoyomiColor.lightGreen)
         case .deepPink:     return .init(dayBackgrond: UIColor.KoyomiColor.pink, weekBackgrond: UIColor.KoyomiColor.pink, week: .white, weekday: .white, holiday: (.white, .white), otherMonth: UIColor.KoyomiColor.lightGray, separator: UIColor.KoyomiColor.lightPink)
+            
+        // Custom color style
+        case .custom(let customColor): return .init(dayBackgrond: customColor.dayBackgrond, weekBackgrond: customColor.weekBackgrond, week: customColor.week, weekday: customColor.weekday, holiday: customColor.holiday, otherMonth: customColor.otherMonth, separator: customColor.separator)
         }
     }
 }
@@ -204,7 +229,7 @@ final public class Koyomi: UICollectionView {
             reloadData()
         }
     }
-
+    
     public var inset: UIEdgeInsets = .zero {
         didSet {
             if let layout = collectionViewLayout as? KoyomiLayout, layout.inset != inset {
@@ -252,7 +277,7 @@ final public class Koyomi: UICollectionView {
     
     // KoyomiDelegate
     public weak var calendarDelegate: KoyomiDelegate?
-
+    
     // Fileprivate properties
     fileprivate var highlightedDayColor = UIColor.KoyomiColor.black
     fileprivate var highlightedDayBackgrondColor: UIColor = .white
@@ -266,7 +291,7 @@ final public class Koyomi: UICollectionView {
     
     fileprivate var dayLabelFont: UIFont?
     fileprivate var weekLabelFont: UIFont?
-
+    
     // MARK: - Initialization -
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -409,7 +434,7 @@ private extension Koyomi {
             postion = weekPosition
             
         } else {
-
+            
             // Configure appearance properties for day cell
             isSelected = model.isSelect(with: indexPath)
             
@@ -484,7 +509,13 @@ private extension Koyomi {
         
         // Set cell to appearance properties
         cell.content   = content
-        cell.textColor = textColor
+        cell.textColor = {
+            if isSelected {
+                return calendarDelegate?.koyomi?(self, selectionTextColorForItemAt: indexPath, date: date) ?? textColor
+            } else {
+                return textColor
+            }
+        }()
         cell.contentPosition = postion
         cell.circularViewDiameter = circularViewDiameter
         let selectionColor: UIColor = {
@@ -527,7 +558,7 @@ extension Koyomi: UICollectionViewDelegate {
             date   = model.date(at: indexPath)
             toDate = nil
             length = 1
-        
+            
         case .sequence(_):
             let willSelectDates = model.willSelectDates(with: indexPath)
             date   = willSelectDates.from
